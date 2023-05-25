@@ -8,7 +8,7 @@ sequenceDiagram
     server-->>browser: HTML document
     deactivate server
     
-     Note right of browser: The browser returns status code 302 which indicates that the resource requested has been temporarily moved to the URL given by the Location header and redirects to said URL
+    Note right of browser: The browser returns status code 302 which indicates that the resource requested has been temporarily moved to the URL given by the Location header and redirects to said URL
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
