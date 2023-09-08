@@ -1,5 +1,6 @@
 const Total = ({ parts }) => {
-  return <p><strong>Total of {parts[0].exercises + parts[1].exercises + parts[2].exercises + parts[3].exercises} exercises</strong></p>;
+  const totalExercises = parts.reduce((total, part) => total + part.exercises, 0);
+  return <p><strong>Total of {totalExercises} exercises</strong></p>;
 };
 
 export default Total;
