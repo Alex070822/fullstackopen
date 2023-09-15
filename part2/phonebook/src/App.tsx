@@ -35,14 +35,22 @@ const App = () => {
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`${newNumber} is already added to phonebook`);
     } else {
-      setPersons((prevPersons: Person[]) => [
-        ...prevPersons,
-        { name: newName, number: newNumber, id: persons.length + 1 }
-      ]);
-      setNewName('');
-      setNewNumber('');
+
+      const newPerson = {name: newName, number: newNumber};
+
+      axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then((response) => {
+
+        setPersons([...persons, response.data]);
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch((error) => {
+        console.error('Error adding person:', error);
+      });
     }
-  };
+  }
 
   useEffect(() => {
     axios
