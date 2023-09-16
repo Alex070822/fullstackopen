@@ -33,8 +33,8 @@ const App = () => {
 
       personsService
       .create(newPerson)
-      .then((response) => {
-        setPersons([...persons, response]);
+      .then((returnedPersons) => {
+        setPersons([...persons, returnedPersons]);
         setNewName('');
         setNewNumber('');
       })
@@ -46,8 +46,8 @@ const App = () => {
 
   useEffect(() => {
     personsService.getAll()
-    .then((response) => {
-      setPersons(response);
+    .then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -64,7 +64,7 @@ const App = () => {
             handleNewNumber={handleNewNumber}
         />
         <h3>Numbers</h3>
-        <Persons persons={persons} filterText={filterText} />
+        <Persons persons={persons} filterText={filterText} setPersons={setPersons}/>
       </div>
   );
 };
