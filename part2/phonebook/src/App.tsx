@@ -24,17 +24,38 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-    } else if (persons.some((person) => person.number === newNumber)) {
-      alert(`${newNumber} is already added to phonebook`);
+    const existingPerson = persons.find((person) => person.name === newName);
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+
+        personsService
+        .update(existingPerson.id, updatedPerson)
+        .then((updatedPerson) => {
+          setPersons(
+              persons.map((person) =>
+                  person.id === existingPerson.id ? updatedPerson : person
+              )
+          );
+          setNewName('');
+          setNewNumber('');
+        })
+        .catch((error) => {
+          console.error('Error updating person:', error);
+        });
+      }
     } else {
       const newPerson = { name: newName, number: newNumber };
 
       personsService
       .create(newPerson)
-      .then((returnedPersons) => {
-        setPersons([...persons, returnedPersons]);
+      .then((returnedPerson) => {
+        setPersons([...persons, returnedPerson]);
         setNewName('');
         setNewNumber('');
       })
@@ -43,6 +64,7 @@ const App = () => {
       });
     }
   };
+
 
   useEffect(() => {
     personsService.getAll()
