@@ -1,7 +1,16 @@
-const Countries = ({ countries, filterText }) => {
+import CountryInfo from "../CountryInfo/CountryInfo";
+
+const Countries = ({ countries, filterText, countryDetails, setCountryDetails }) => {
   const filteredCountries = countries.filter(country =>
       country.name.common.toLowerCase().includes(filterText.toLowerCase())
   );
+
+  const toggleCountryDetails = (countryName) => {
+    setCountryDetails(prevDetails => ({
+      ...prevDetails,
+      [countryName]: !prevDetails[countryName] || false,
+    }));
+  };
 
   return (
       <>
@@ -11,29 +20,24 @@ const Countries = ({ countries, filterText }) => {
             <>
               {filteredCountries.map(country => (
                   <div key={country.name.common}>
-                    <h1>{country.name.common}</h1>
-                    <div>capital {country.capital}</div>
-                    <div>area {country.area}</div>
-                    <h4>languages:</h4>
-                    <ul>
-                      {Object.entries(country.languages).map(([code, language]) => (
-                          <li key={code}>{language}</li>
-                      ))}
-                    </ul>
-                    <img src={country.flags.png} alt={`${country.name.common} flag`}/>
+                    <CountryInfo country={country}/>
                   </div>
               ))}
             </>
         ) : (
             <>
               {filteredCountries.map(country => (
-                  <div key={country.name.common}>{country.name.common}</div>
+                  <div key={country.name.common}>{country.name.common}{' '}
+                    <button onClick={() => toggleCountryDetails(country.name.common)}>
+                      {countryDetails[country.name.common] ? 'hide' : 'show'}
+                    </button>
+                    {countryDetails[country.name.common] ? <CountryInfo country={country} /> : null}
+                  </div>
               ))}
             </>
         )}
       </>
   );
 };
-
 
 export default Countries;

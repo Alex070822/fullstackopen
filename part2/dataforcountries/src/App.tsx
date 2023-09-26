@@ -6,6 +6,7 @@ import Countries from "./components/Countries/Countries";
 function App() {
   const [countries, setCountries] = useState([]);
   const [filterText, setFilterText] = useState('');
+  const [countryDetails, setCountryDetails] = useState({});
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
@@ -22,7 +23,7 @@ function App() {
   return (
     <>
       <Filter filterText={filterText} handleFilterChange={handleFilterChange} />
-      <Countries countries={countries} filterText={filterText}/>
+      <Countries countries={countries} filterText={filterText} countryDetails={countryDetails} setCountryDetails={setCountryDetails}/>
     </>
   )
 }
