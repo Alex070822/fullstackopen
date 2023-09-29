@@ -1,16 +1,10 @@
 import CountryInfo from "../CountryInfo/CountryInfo";
+import Weather from "../Weather/Weather";
 
-const Countries = ({ countries, filterText, countryDetails, setCountryDetails }) => {
+const Countries = ({ countries, filterText, countryDetails, toggleCountryDetails, weatherInfo, setWeatherInfo, weatherApiCall, setWeatherApiCall}) => {
   const filteredCountries = countries.filter(country =>
       country.name.common.toLowerCase().includes(filterText.toLowerCase())
   );
-
-  const toggleCountryDetails = (countryName) => {
-    setCountryDetails(prevDetails => ({
-      ...prevDetails,
-      [countryName]: !prevDetails[countryName] || false,
-    }));
-  };
 
   return (
       <>
@@ -21,6 +15,15 @@ const Countries = ({ countries, filterText, countryDetails, setCountryDetails })
               {filteredCountries.map(country => (
                   <div key={country.name.common}>
                     <CountryInfo country={country}/>
+                    <Weather {...{
+                      country,
+                      weatherInfo,
+                      setWeatherInfo,
+                      filterText,
+                      filteredCountries,
+                      weatherApiCall,
+                      setWeatherApiCall
+                    }} />
                   </div>
               ))}
             </>

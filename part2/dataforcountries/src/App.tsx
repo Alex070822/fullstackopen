@@ -7,11 +7,19 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [countryDetails, setCountryDetails] = useState({});
+  const [weatherInfo, setWeatherInfo] = useState ({});
+  const [weatherApiCall, setWeatherApiCall] = useState (false);
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
   };
 
+  const toggleCountryDetails = (countryName) => {
+    setCountryDetails(prevDetails => ({
+      ...prevDetails,
+      [countryName]: !prevDetails[countryName] || false,
+    }));
+  };
 
   useEffect(() => {
     countriesService.getAll()
@@ -23,9 +31,18 @@ function App() {
   return (
     <>
       <Filter filterText={filterText} handleFilterChange={handleFilterChange} />
-      <Countries countries={countries} filterText={filterText} countryDetails={countryDetails} setCountryDetails={setCountryDetails}/>
+      <Countries {...{
+        countries,
+        filterText,
+        countryDetails,
+        toggleCountryDetails,
+        weatherInfo,
+        setWeatherInfo,
+        weatherApiCall,
+        setWeatherApiCall
+      }}/>
     </>
   )
 }
 
-export default App
+export default App;
