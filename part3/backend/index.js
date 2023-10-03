@@ -32,6 +32,24 @@ app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
 
+app.get('/info', (request, response) => {
+  const currentTime = new Date();
+  const options = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZoneName: 'long',
+  };
+
+  const formattedTime = new Intl.DateTimeFormat('en-US', options).format(currentTime);
+  response.send(`<p>Phonebook has info ${persons.length} for people</p><p>${formattedTime}</p>`)
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
