@@ -1,7 +1,28 @@
+### POST full request
+
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
   "name": "John Doe",
+  "number": "987-22--654321"
+}
+
+### POST missing name or number
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "John Doe"
+}
+
+### POST duplicate name
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
   "number": "987-22--654321"
 }
