@@ -11,9 +11,10 @@ morgan.token('custom', (req) => {
   }
 });
 
-app.use(cors())
+app.use(express.static('dist'));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms {:custom}'));
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 let persons = [
   {
@@ -82,7 +83,7 @@ app.post('/api/persons', (request, response) => {
   }
 
   persons = persons.concat(person)
-  console.log(person)
+
   response.json(person)
 })
 
