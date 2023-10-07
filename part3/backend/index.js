@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
 
 morgan.token('custom', (req) => {
   if (req.body && req.body.name && req.body.number) {
@@ -10,6 +11,7 @@ morgan.token('custom', (req) => {
   }
 });
 
+app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms {:custom}'));
 app.use(express.json())
 
