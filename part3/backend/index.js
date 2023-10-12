@@ -61,10 +61,6 @@ app.get('/api/persons/:id', (request, response) => {
     }
 })
 
-const generateId = () => {
-  return Math.floor(Math.random() * 100000) + 1;
-}
-
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
@@ -80,15 +76,14 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
-  }
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
