@@ -18,29 +18,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms {:
 app.use(cors());
 app.use(express.json());
 
-let persons = [
-  {
-    "id": 1,
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": 2,
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": 3,
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": 4,
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
-
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -53,14 +30,16 @@ app.get('/api/persons', (request, response, next) => {
   .catch(error => next(error));
 });
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+  .then(person => {
+    if (person) {
+      response.json(person)
+    } else {
+      response.status(404).end()
+    }
+  })
+  .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -104,22 +83,25 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
-  const currentTime = new Date();
-  const options = {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZoneName: 'long',
-  };
+  Person.countDocuments({}).then(count => {
+    const currentTime = new Date();
+    const options = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZoneName: 'long',
+    };
 
-  const formattedTime = new Intl.DateTimeFormat('en-US', options).format(currentTime);
-  response.send(`<p>Phonebook has info ${persons.length} for people</p><p>${formattedTime}</p>`)
-})
+    const formattedTime = new Intl.DateTimeFormat('en-US', options).format(currentTime);
+
+    response.send(`<p>Phonebook has info for ${count} people</p><p>${formattedTime}</p>`);
+  });
+});
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
