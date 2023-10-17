@@ -45,40 +45,32 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+  .then(persons => {
+    response.json(persons);
   })
-})
+  .catch(error => next(error));
+});
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
 })
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-/*
-if (!body.name || !body.number) {
-  return response.status(400).json({
-    error: 'name or number missing'
-  })
-}
+  if (!body.name || !body.number) {
+    return response.status(400).json({ error: 'name or number missing' });
+  }
 
-if (persons.some(person => person.name === body.name)) {
-  return response.status(409).json({
-    error: 'name already exists'
-  })
-}
-*/
-
-const person = new Person({
+  const person = new Person({
   name: body.name,
   number: body.number,
 })
@@ -97,22 +89,39 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
-const currentTime = new Date();
-const options = {
-  weekday: 'short',
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hour12: false,
-  timeZoneName: 'long',
-};
+  const currentTime = new Date();
+  const options = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZoneName: 'long',
+  };
 
-const formattedTime = new Intl.DateTimeFormat('en-US', options).format(currentTime);
-response.send(`<p>Phonebook has info ${persons.length} for people</p><p>${formattedTime}</p>`)
+  const formattedTime = new Intl.DateTimeFormat('en-US', options).format(currentTime);
+  response.send(`<p>Phonebook has info ${persons.length} for people</p><p>${formattedTime}</p>`)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
