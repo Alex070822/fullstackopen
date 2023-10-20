@@ -54,14 +54,19 @@ const App = () => {
             setNotificationType('');
           }, 5000);
         })
-        .catch(() => {
-          setNotification(`Information of ${newName} has already been removed from server`);
-          setNotificationType("error");
+        .catch((error) => {
+          if (error.response.status === 400) {
+            setNotification(error.response.data.error);
+            setNotificationType("error");
+          } else if (error.response.status === 404) {
+            setNotification(`Information of ${newName} has already been removed from the server`);
+            setNotificationType("error");
+            setPersons(persons.filter(person => person.id !== existingPerson.id));
+          }
           setTimeout(() => {
             setNotification('');
             setNotificationType('');
           }, 5000);
-          setPersons(persons.filter(person => person.id !== existingPerson.id));
         });
       }
     } else {
@@ -101,6 +106,7 @@ const App = () => {
       .catch(error => {
         setNotification(`Error deleting ${name}: ${error}`);
         setNotificationType("error");
+        setPersons(prevPersons => prevPersons.filter(person => person.id !== id));
         setTimeout(() => {
           setNotification('');
           setNotificationType('');

@@ -68,16 +68,18 @@ app.put('/api/persons/:id', (request, response, next) => {
       request.params.id,
       { name, number },
       { new: true, runValidators: true, context: 'query' }
-      )
-  .then(updatedPerson => {
+  )
+  .then((updatedPerson) => {
     if (updatedPerson) {
       response.json(updatedPerson);
     } else {
       response.status(404).send({ error: 'Person not found' });
     }
   })
-  .catch(error => next(error))
-})
+  .catch((error) => {
+    next(error);
+  });
+});
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
