@@ -81,7 +81,12 @@ const App = () => {
         }, 5000);
       })
       .catch((error) => {
-        console.error('Error adding person:', error);
+        setNotification(error.response.data.error);
+        setNotificationType("error");
+        setTimeout(() => {
+          setNotification('');
+          setNotificationType('');
+        }, 5000);
       });
     }
   };
@@ -94,7 +99,12 @@ const App = () => {
         setPersons(persons.filter(person => person.id !== id));
       })
       .catch(error => {
-        console.error(`Error deleting ${name}`, error);
+        setNotification(`Error deleting ${name}: ${error}`);
+        setNotificationType("error");
+        setTimeout(() => {
+          setNotification('');
+          setNotificationType('');
+        }, 5000);
       });
     }
   };
