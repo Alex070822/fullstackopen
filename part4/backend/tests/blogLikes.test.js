@@ -136,7 +136,7 @@ describe('most blogs', () => {
 
   test('when a list has multiple authors with the same amount of blogs', () => {
     const result = listHelper.mostBlogs(equalAmountOfMaxLikes)
-    expect(result).toEqual({ 'author': 'Michael Chan', 'blogs': 1})
+    expect(result).toEqual({ 'author': 'Michael Chan', 'blogs': 1 })
   })
 
   test('of a bigger list is calculated right', () => {
@@ -157,9 +157,9 @@ describe('most likes', () => {
     expect(result).toEqual({ 'author': 'Edsger W. Dijkstra', 'likes': 5 })
   })
 
-  test('when a list has multiple authors with the same amount of blogs', () => {
+  test('when a list has multiple authors with the same amount of likes', () => {
     const result = listHelper.mostLikes(equalAmountOfMaxLikes)
-    expect(result).toEqual({ 'author': 'Michael Chan', 'likes': 7})
+    expect(result).toEqual({ 'author': 'Michael Chan', 'likes': 7 })
   })
 
   test('of a bigger list is calculated right', () => {
