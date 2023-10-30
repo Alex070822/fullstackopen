@@ -121,3 +121,26 @@ describe('favorite blog', () => {
     expect(result).toEqual({ 'author': 'Edsger W. Dijkstra', 'likes': 12, 'title': 'Canonical string reduction' })
   })
 })
+
+describe('most blogs', () => {
+
+  test('of empty list is null', () => {
+    const result = listHelper.mostBlogs([])
+    expect(result).toBe(null)
+  })
+
+  test('when list has only one blog, returns single object', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    expect(result).toEqual({ 'author': 'Edsger W. Dijkstra', 'blogs': 1 })
+  })
+
+  test('when a list has multiple authors with the same amount of blogs', () => {
+    const result = listHelper.mostBlogs(equalAmountOfMaxLikes)
+    expect(result).toEqual({ 'author': 'Michael Chan', 'blogs': 1})
+  })
+
+  test('of a bigger list is calculated right', () => {
+    const result = listHelper.mostBlogs(blogs)
+    expect(result).toEqual({ 'author': 'Robert C. Martin', 'blogs': 3 })
+  })
+})
