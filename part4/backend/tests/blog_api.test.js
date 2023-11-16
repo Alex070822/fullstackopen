@@ -29,11 +29,30 @@ beforeEach(async () => {
 })
 
 test('HTTP GET request to the /api/blogs URL', async () => {
-  await api
+  const response = await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
+
+  const blogs = response.body
+  expect(blogs).toHaveLength(initialBlogs.length)
+  console.log(blogs)
 })
+
+test('Blog posts have "id" as the unique identifier', async () => {
+  const response = await api
+  .get('/api/blogs')
+  .expect(200)
+  .expect('Content-Type', /application\/json/)
+
+  const blogs = response.body
+  blogs.forEach(blog => {
+    expect(blog.id).toBeDefined()
+    expect(blog._id).toBeUndefined()
+  })
+})
+
+
 
 afterAll(async () => {
   await mongoose.connection.close()
