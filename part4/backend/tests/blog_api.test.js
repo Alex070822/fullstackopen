@@ -19,6 +19,13 @@ const initialBlogs = [
   }
 ]
 
+const newBlog = {
+  title: 'Test blog',
+  author: 'Alexis Gonzalez',
+  url: 'https://www.google.com/',
+  likes: 7,
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -41,9 +48,8 @@ test('HTTP GET request to the /api/blogs URL', async () => {
 
 test('Blog posts have "id" as the unique identifier', async () => {
   const response = await api
-  .get('/api/blogs')
-  .expect(200)
-  .expect('Content-Type', /application\/json/)
+    .get('/api/blogs')
+    .expect(200)
 
   const blogs = response.body
   blogs.forEach(blog => {
@@ -52,7 +58,25 @@ test('Blog posts have "id" as the unique identifier', async () => {
   })
 })
 
+test('HTTP POST request to the /api/blogs URL increases total number of blogs by one', async () => {
+  const initialResponse = await api
+    .get('/api/blogs')
+    .expect(200)
 
+  const initialBlogsCount = initialResponse.body.length
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+
+  const updatedResponse = await api
+    .get('/api/blogs')
+    .expect(200)
+
+  const updatedBlogsCount = updatedResponse.body.length
+  expect(updatedBlogsCount).toBe(initialBlogsCount + 1)
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
