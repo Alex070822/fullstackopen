@@ -26,6 +26,12 @@ const newBlog = {
   likes: 7,
 }
 
+const newBlogWithoutLikes = {
+  title: 'Nobody likes me :(',
+  author: 'Alexis Gonzalez',
+  url: 'https://www.google.com/',
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -76,6 +82,33 @@ test('HTTP POST request to the /api/blogs URL increases total number of blogs by
 
   const updatedBlogsCount = updatedResponse.body.length
   expect(updatedBlogsCount).toBe(initialBlogsCount + 1)
+})
+
+test('Verify if likes property is missing from request', async () => {
+  const postResponse = await api
+  .post('/api/blogs')
+  .send(newBlogWithoutLikes)
+  .expect(201)
+
+  const getResponse = await api
+  .get(`/api/blogs/${postResponse.body.id}`)
+  .expect(200)
+
+  if (!('likes' in getResponse.body)) {
+    getResponse.body.likes = 0;
+
+    await api
+    .put(`/api/blogs/${postResponse.body.id}`)
+    .send(getResponse.body)
+    .expect(200)
+  }
+
+  const verifyResponse = await api
+  .get(`/api/blogs/${postResponse.body.id}`)
+  .expect(200)
+
+  expect(verifyResponse.body).toHaveProperty('likes');
+  expect(verifyResponse.body.likes).toBe(0);
 })
 
 afterAll(async () => {
