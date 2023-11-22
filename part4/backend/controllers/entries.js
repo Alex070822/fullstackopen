@@ -16,8 +16,19 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', async(request, response) => {
-  const result = await Blog.create(request.body)
-  response.status(201).json(result)
+  const requestKeys = Object.keys(request.body)
+  const blogKeys = Object.keys(Blog.schema.paths)
+
+  const keysMatch = requestKeys.length === blogKeys.length && requestKeys.every(key => blogKeys.includes(key))
+
+  if (!keysMatch) {
+    response.status(400).json({ error: 'Entry is missing properties' })
+  } else {
+    Blog.create(request.body)
+      .then(result => {
+        response.status(201).json(result)
+      })
+  }
 })
 
 blogsRouter.put('/:id', async (request, response) => {

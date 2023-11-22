@@ -32,6 +32,10 @@ const newBlogWithoutLikes = {
   url: 'https://www.google.com/',
 }
 
+const newBlogMissingProps = {
+  author: 'Alexis Gonzalez',
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -86,29 +90,36 @@ test('HTTP POST request to the /api/blogs URL increases total number of blogs by
 
 test('Verify if likes property is missing from request', async () => {
   const postResponse = await api
-  .post('/api/blogs')
-  .send(newBlogWithoutLikes)
-  .expect(201)
+    .post('/api/blogs')
+    .send(newBlogWithoutLikes)
+    .expect(201)
 
   const getResponse = await api
-  .get(`/api/blogs/${postResponse.body.id}`)
-  .expect(200)
+    .get(`/api/blogs/${postResponse.body.id}`)
+    .expect(200)
 
   if (!('likes' in getResponse.body)) {
-    getResponse.body.likes = 0;
+    getResponse.body.likes = 0
 
     await api
-    .put(`/api/blogs/${postResponse.body.id}`)
-    .send(getResponse.body)
-    .expect(200)
+      .put(`/api/blogs/${postResponse.body.id}`)
+      .send(getResponse.body)
+      .expect(200)
   }
 
   const verifyResponse = await api
-  .get(`/api/blogs/${postResponse.body.id}`)
-  .expect(200)
+    .get(`/api/blogs/${postResponse.body.id}`)
+    .expect(200)
 
-  expect(verifyResponse.body).toHaveProperty('likes');
-  expect(verifyResponse.body.likes).toBe(0);
+  expect(verifyResponse.body).toHaveProperty('likes')
+  expect(verifyResponse.body.likes).toBe(0)
+})
+
+test('Verify if new blog has title and url properties', async () => {
+  await api
+    .post('/api/blogs')
+    .send(newBlogMissingProps)
+    .expect(400)
 })
 
 afterAll(async () => {
