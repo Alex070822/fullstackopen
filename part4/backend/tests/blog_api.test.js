@@ -1,45 +1,14 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
+const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 
-const initialBlogs = [
-  {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-  },
-  {
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 7,
-  }
-]
-
-const newBlog = {
-  title: 'Test blog',
-  author: 'Alexis Gonzalez',
-  url: 'https://www.google.com/',
-  likes: 7,
-}
-
-const newBlogWithoutLikes = {
-  title: 'Nobody likes me :(',
-  author: 'Alexis Gonzalez',
-  url: 'https://www.google.com/',
-}
-
-const newBlogMissingProps = {
-  author: 'Alexis Gonzalez',
-}
-
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  const blogObjects = initialBlogs
+  const blogObjects = helper.initialBlogs
     .map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
@@ -52,7 +21,7 @@ test('HTTP GET request to the /api/blogs URL', async () => {
     .expect('Content-Type', /application\/json/)
 
   const blogs = response.body
-  expect(blogs).toHaveLength(initialBlogs.length)
+  expect(blogs).toHaveLength(helper.initialBlogs.length)
   console.log(blogs)
 })
 
@@ -77,7 +46,7 @@ test('HTTP POST request to the /api/blogs URL increases total number of blogs by
 
   await api
     .post('/api/blogs')
-    .send(newBlog)
+    .send(helper.newBlog)
     .expect(201)
 
   const updatedResponse = await api
@@ -91,7 +60,7 @@ test('HTTP POST request to the /api/blogs URL increases total number of blogs by
 test('Verify if likes property is missing from request', async () => {
   const postResponse = await api
     .post('/api/blogs')
-    .send(newBlogWithoutLikes)
+    .send(helper.newBlogWithoutLikes)
     .expect(201)
 
   const getResponse = await api
@@ -118,10 +87,29 @@ test('Verify if likes property is missing from request', async () => {
 test('Verify if new blog has title and url properties', async () => {
   await api
     .post('/api/blogs')
-    .send(newBlogMissingProps)
+    .send(helper.newBlogMissingProps)
     .expect(400)
+})
+
+test('Delete a single blog entry', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+  .delete(`/api/blogs/${blogToDelete.id}`)
+  .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  expect(blogsAtEnd).toHaveLength(
+      helper.initialBlogs.length - 1
+  )
+  const contents = blogsAtEnd.map(r => r.title)
+
+  expect(contents).not.toContain(blogToDelete.title)
 })
 
 afterAll(async () => {
   await mongoose.connection.close()
 })
+
